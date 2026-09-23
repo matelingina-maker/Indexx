@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carol's 21st Birthday Journey ✨</title>
+  
+  <!-- Google Fonts: Elegant Alex Brush Calligraphy + Plus Jakarta Sans Body -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --pink-glow: #f472b6;
+      --purple-glow: #a855f7;
+      --gold-glow: #f59e0b;
+      --dark-bg: #0d0714;
+      --glass-card: rgba(22, 13, 33, 0.75);
+      --glass-border: rgba(244, 114, 182, 0.2);
+      --text-main: #f8fafc;
+      --text-sub: #cbd5e1;
+      --calligraphy: 'Alex Brush', cursive;
+      --heading-font: 'Cormorant Garamond', serif;
+      --body-font: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--dark-bg);
+      color: var(--text-main);
+      font-family: var(--body-font);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.7;
+      position: relative;
+    }
+
+    /* Ambient Glow Background */
+    .bg-lights {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 15% 20%, rgba(244, 114, 182, 0.12), transparent 45%),
+                  radial-gradient(circle at 85% 80%, rgba(168, 85, 247, 0.12), transparent 45%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Floating Cat Overlay */
+    #cat-layer, #flower-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .floating-cat {
+      position: absolute;
+      font-size: 1.8rem;
+      opacity: 0.25;
+      animation: catFloat 15s linear infinite;
+    }
+
+    @keyframes catFloat {
+      0% { transform: translateY(105vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    .floating-petal {
+      position: absolute;
+      font-size: 1.5rem;
+      animation: petalFall 8s ease-in-out infinite;
+    }
+
+    @keyframes petalFall {
+      0% { transform: translateY(-5vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.8; }
+      100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Main Container */
+    .app-container {
+      position: relative;
+      z-index: 5;
+      max-width: 950px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+    }
+
+    /* Glass Card Base */
+    .glass-box {
+      background: var(--glass-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 28px;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      margin-bottom: 3rem;
+      transition: all 0.5s ease;
+    }
+
+    /* Titles & Fonts */
+    .calligraphy-text {
+      font-family: var(--calligraphy);
+      font-size: 3.5rem;
+      color: var(--pink-glow);
+      line-height: 1.2;
+      text-shadow: 0 0 15px rgba(244, 114, 182, 0.4);
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .section-header h1, .section-header h2 {
+      font-family: var(--heading-font);
+      font-size: 2.8rem;
+      background: linear-gradient(135deg, #ffffff 40%, var(--pink-glow) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Gallery Grid: Cherishing Moments */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .gallery-card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      overflow: hidden;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--pink-glow);
+    }
+
+    .gallery-card img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+    }
+
+    .gallery-card p {
+      padding: 0.8rem;
+      font-size: 0.85rem;
+      color: var(--text-sub);
+    }
+
+    /* Interactive Quest Lock */
+    .locked-stage {
+      opacity: 0.3;
+      pointer-events: none;
+      filter: blur(5px);
+    }
+
+    .question-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px dashed var(--pink-glow);
+      border-radius: 20px;
+      padding: 1.8rem;
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    .question-box h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--gold-glow);
+    }
+
+    .quiz-input-group {
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      max-width: 450px;
+      margin: 0 auto;
+    }
+
+    .quiz-input {
+      padding: 0.8rem 1.2rem;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-size: 1rem;
+      width: 100%;
+      outline: none;
+    }
+
+    .quiz-btn {
+      padding: 0.8rem 1.8rem;
+      border-radius: 30px;
+      border: none;
+      background: linear-gradient(135deg, var(--pink-glow), var(--purple-glow));
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.2s ease;
+    }
+
+    .quiz-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .error-msg {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    /* Encrypted Final Section */
+    .encrypted-box {
+      font-family: monospace;
+      letter-spacing: 2px;
+      word-break: break-all;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 2rem;
+      border-radius: 16px;
+      color: var(--pink-glow);
+      margin: 1.5rem 0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+
+    .decrypted-text {
+      font-family: var(--calligraphy) !important;
+      font-size: 2.8rem !important;
+      letter-spacing: normal !important;
+      word-break: normal !important;
+      color: #ffffff !important;
+      line-height: 1.4 !important;
+      text-shadow: 0 0 10px rgba(244, 114, 182, 0.6);
+    }
+
+    /* Layout for Praising Pages */
+    .praise-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .praise-img {
+      width: 100%;
+      height: 360px;
+      object-fit: cover;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .praise-content h2 {
+      font-family: var(--heading-font);
+      font-size: 2.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .praise-text {
+      font-size: 1.1rem;
+      color: var(--text-sub);
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .praise-layout {
+        grid-template-columns: 1fr;
+      }
+      .praise-img {
+        height: 280px;
+      }
+      .calligraphy-text {
+        font-size: 2.8rem;
+      }
+      .quiz-input-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-lights"></div>
+  <div id="cat-layer"></div>
+  <div id="flower-layer"></div>
+
+  <div class="app-container">
+
+    <!-- HERO / CHERISHING MOMENTS SECTION -->
+    <div class="glass-box">
+      <div class="section-header">
+        <p style="text-transform: uppercase; letter-spacing: 3px; color: var(--pink-glow); font-size: 0.85rem; font-weight: 600;">Chapter 21 • Unlocking Perfection</p>
+        <h1>Cherishing Moments of Your Life</h1>
+        <p class="calligraphy-text">Happy 21st Birthday, Beautiful Carol</p>
+      </div>
+
+      <p style="text-align: center; color: var(--text-sub); max-width: 700px; margin: 0 auto 2rem auto;">
+        Today is all about honoring you, your boundless joy, and the gift of your existence. Scroll through your moments below and answer the special questions to unlock every page of your birthday tribute!
+      </p>
+
+      <!-- 4 Photos Gallery -->
+      <div class="gallery-grid">
+        <div class="gallery-card">
+          <img src="1000071897.jpg" alt="Carol Smiling">
+          <p>✨ Pure Joy & Laughs</p>
+        </div>
+        <div class="gallery-card">
+          <img src="1000071899.jpg" alt="Carol with Guitar">
+          <p>🎵 Artistry & Rhythm</p>
+        </div>
+        <div class="gallery-card">
+          <img src="1000071910.jpg" alt="Carol with Headphones">
+          <p>🎧 Unmatched Style</p>
+        </div>
+        <div class="gallery-card">
+          <img src="1000071901.jpg" alt="Carol with Sunglasses">
+          <p>☀️ Radiant Confidence</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 1: SMILING PHOTO & FLOWER PETALS (Active by default) -->
+    <div class="glass-box" id="page-1">
+      <div class="praise-layout">
+        <img src="1000071897.jpg" alt="Carol Smiling" class="praise-img">
+        <div class="praise-content">
+          <h2>The Warmth of Your Smile</h2>
+          <div class="calligraphy-text" style="font-size: 2.5rem; margin-bottom: 1rem;">"A smile that lights up the world"</div>
+          <p class="praise-text">
+            Carol, your smile is hands down one of the most comforting things in the world. When you laugh, it feels like all worries instantly fade away and spring flowers bloom all around. You bring an effortless light into every room you walk into, reminding everyone how beautiful real joy looks.
+          </p>
+        </div>
+      </div>
+
+      <!-- Question 1 to unlock Page 2 -->
+      <div class="question-box" id="q1-box">
+        <h3>🔒 Question #1 to unlock the next chapter:</h3>
+        <p style="color: var(--text-sub); margin-bottom: 1rem; font-size: 0.95rem;">
+          What is the special animal that Carol loves the most, which is floating all over this screen right now? 🐾
+        </p>
+        <div class="quiz-input-group">
+          <input type="text" id="ans-1" class="quiz-input" placeholder="Type answer here...">
+          <button class="quiz-btn" onclick="checkQ1()">Unlock Page 2 ✨</button>
+        </div>
+        <div id="err-1" class="error-msg">Hint: It purrs and loves fish! (Type "cat" or "cats")</div>
+      </div>
+    </div>
+
+    <!-- PAGE 2: ARTISTRY & GUITAR (Locked initially) -->
+    <div class="glass-box locked-stage" id="page-2">
+      <div class="praise-layout">
+        <img src="1000071899.jpg" alt="Carol with Guitar" class="praise-img">
+        <div class="praise-content">
+          <h2>Soulful, Creative & Gentle</h2>
+          <div class="calligraphy-text" style="font-size: 2.5rem; margin-bottom: 1rem;">"Living life in sweet harmony"</div>
+          <p class="praise-text">
+            There is a rare depth to you, Carol. You carry yourself with a gentle creativity and rhythm that makes you so captivating. Whether you are enjoying your favorite music, expressing your passions, or simply being still, you live life with a soulfulness that commands genuine respect and admiration.
+          </p>
+        </div>
+      </div>
+
+      <!-- Question 2 to unlock Final Stage -->
+      <div class="question-box" id="q2-box">
+        <h3>🔒 Question #2 to unlock the Encrypted Message:</h3>
+        <p style="color: var(--text-sub); margin-bottom: 1rem; font-size: 0.95rem;">
+          How old is Carol officially turning today? 🎉
+        </p>
+        <div class="quiz-input-group">
+          <input type="text" id="ans-2" class="quiz-input" placeholder="Enter age...">
+          <button class="quiz-btn" onclick="checkQ2()">Unlock Encrypted Finale 🔑</button>
+        </div>
+        <div id="err-2" class="error-msg">Hint: Enter the number 21!</div>
+      </div>
+    </div>
+
+    <!-- PAGE 3: ENCRYPTED FINAL MESSAGE (Locked initially) -->
+    <div class="glass-box locked-stage" id="page-3">
+      <div class="section-header">
+        <p style="text-transform: uppercase; letter-spacing: 3px; color: var(--gold-glow); font-size: 0.85rem; font-weight: 600;">The Ultimate Secret Message</p>
+        <h2>Decipher Your Birthday Blessing</h2>
+      </div>
+
+      <p style="text-align: center; color: var(--text-sub);">
+        The final prayer and wish for your 21st birthday is locked in code below. Solve the final question to decrypt the message!
+      </p>
+
+      <div class="encrypted-box" id="cipher-box">
+        01001000 01100001 01110000 01110000 01111001 00100000 00110010 00110001 01110011 01110100 00100000 01000011 01100001 01110010 01101111 01101100 00100001 00100000 01001001 00100000 01110100 01101000 01100001 01101110 01101011 00100000 01000111 01101111 01100100 00100000 01100110 01101111 01100010 00100000 01111001 01101111 01101101 ... [LOCKED ENCRYPTED DATA]
+      </div>
+
+      <div class="question-box" id="q3-box">
+        <h3>🔑 Final Decryption Key Question:</h3>
+        <p style="color: var(--text-sub); margin-bottom: 1rem; font-size: 0.95rem;">
+          Who is the most amazing, wonderful birthday girl being celebrated today? 👑
+        </p>
+        <div class="quiz-input-group">
+          <input type="text" id="ans-3" class="quiz-input" placeholder="Type her name...">
+          <button class="quiz-btn" onclick="decryptMessage()">Decrypt Full Message ✨</button>
+        </div>
+        <div id="err-3" class="error-msg">Hint: Type her name: "Carol"!</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* FLOATING CATS ANIMATION */
+    const catLayer = document.getElementById('cat-layer');
+    const catEmojis = ['🐾', '🐱', '😸', '🐾', '🐈'];
+
+    function generateCats() {
+      for (let i = 0; i < 12; i++) {
+        const cat = document.createElement('div');
+        cat.className = 'floating-cat';
+        cat.innerText = catEmojis[Math.floor(Math.random() * catEmojis.length)];
+        cat.style.left = `${Math.random() * 92}%`;
+        cat.style.animationDelay = `${Math.random() * 10}s`;
+        cat.style.animationDuration = `${12 + Math.random() * 8}s`;
+        catLayer.appendChild(cat);
+      }
+    }
+
+    /* FLOATING FLOWERS ON PAGE 1 */
+    const flowerLayer = document.getElementById('flower-layer');
+    const flowerEmojis = ['🌸', '🌺', '🌷', '🌹'];
+
+    function generateFlowers() {
+      for (let i = 0; i < 15; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'floating-petal';
+        petal.innerText = flowerEmojis[Math.floor(Math.random() * flowerEmojis.length)];
+        petal.style.left = `${Math.random() * 92}%`;
+        petal.style.animationDelay = `${Math.random() * 5}s`;
+        petal.style.animationDuration = `${6 + Math.random() * 6}s`;
+        flowerLayer.appendChild(petal);
+      }
+    }
+
+    generateCats();
+    generateFlowers();
+
+    /* QUEST SYSTEM LOGIC */
+    function checkQ1() {
+      const val = document.getElementById('ans-1').value.trim().toLowerCase();
+      if (val.includes('cat')) {
+        document.getElementById('page-2').classList.remove('locked-stage');
+        document.getElementById('q1-box').innerHTML = "<p style='color: #4ade80; font-weight: 600;'>✅ Correct! Page 2 Unlocked below!</p>";
+        document.getElementById('page-2').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        document.getElementById('err-1').style.display = 'block';
+      }
+    }
+
+    function checkQ2() {
+      const val = document.getElementById('ans-2').value.trim();
+      if (val === '21' || val.toLowerCase().includes('twenty one')) {
+        document.getElementById('page-3').classList.remove('locked-stage');
+        document.getElementById('q2-box').innerHTML = "<p style='color: #4ade80; font-weight: 600;'>✅ Correct! Encrypted Finale Unlocked below!</p>";
+        document.getElementById('page-3').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        document.getElementById('err-2').style.display = 'block';
+      }
+    }
+
+    /* DECRYPTION FINALE */
+    function decryptMessage() {
+      const val = document.getElementById('ans-3').value.trim().toLowerCase();
+      if (val.includes('carol')) {
+        document.getElementById('q3-box').style.display = 'none';
+        
+        const cipherBox = document.getElementById('cipher-box');
+        
+        // Detailed, long, heartfelt birthday wish in special Alex Brush typography
+        cipherBox.className = 'decrypted-text';
+        cipherBox.innerHTML = `
+          "My Dearest Carol,<br><br>
+          On this extraordinary day as you step into your 21st year, I pause to truly thank Almighty God for the incredible blessing of having you in my life. Knowing someone as kind, radiant, and genuinely wonderful as you is a gift I hold so close to my heart.<br><br>
+          You bring a warmth that brightens the darkest days and a light that inspires everyone around you. May God bless you abundantly in this new chapter—granting you endless happiness, unwavering health, peace that surpasses all understanding, and the fulfillment of every secret prayer in your heart.<br><br>
+          May age 21 open divine doors of greatness, love, and breathtaking success for you. Thank you for being such a magnificent soul.<br><br>
+          Happy 21st Birthday, Carol! 🎂💖✨"
+        `;
+
+        // Confetti Celebration Blast
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+
+      } else {
+        document.getElementById('err-3').style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>
